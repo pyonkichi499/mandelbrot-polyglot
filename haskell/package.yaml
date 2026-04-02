@@ -1,0 +1,32 @@
+name: mandelbrot
+version: 0.1.0.0
+license: MIT
+
+ghc-options: -Wall
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Mandelbrot
+  dependencies:
+    - base >= 4.7 && < 5
+    - bytestring
+
+executables:
+  mandelbrot:
+    main: Main.hs
+    source-dirs: app
+    ghc-options: -O2
+    dependencies:
+      - base >= 4.7 && < 5
+      - bytestring
+      - mandelbrot
+
+tests:
+  mandelbrot-test:
+    main: Spec.hs
+    source-dirs: test
+    dependencies:
+      - base >= 4.7 && < 5
+      - mandelbrot
+      - hspec
