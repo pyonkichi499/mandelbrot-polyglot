@@ -1,7 +1,7 @@
 # CLAUDE.md - Mandelbrot Polyglot
 
 ## Project Overview
-Mandelbrot set rendered in multiple languages (Haskell, Rust) with identical output.
+Mandelbrot set rendered in multiple languages (Haskell, Rust, Python) with identical output.
 
 ## Build & Test Commands
 
@@ -14,8 +14,13 @@ cd rust && cargo run --release
 cd haskell && stack test
 cd haskell && stack build && stack exec mandelbrot
 
+# Python
+cd python && rye run pytest tests/ -v
+cd python && rye run mandelbrot
+
 # Verify output identity
 diff haskell/mandelbrot.ppm rust/mandelbrot.ppm
+diff python/mandelbrot.ppm rust/mandelbrot.ppm
 
 # View PPM on macOS (Preview does not support PPM)
 sips -s format png rust/mandelbrot.ppm --out rust/mandelbrot.png && open rust/mandelbrot.png
@@ -27,6 +32,7 @@ sips -s format png rust/mandelbrot.ppm --out rust/mandelbrot.png && open rust/ma
 - Computation logic is separated from the entry point in every language:
   - Rust: `src/mandelbrot.rs` (logic) + `src/main.rs` (I/O) + `src/lib.rs` (re-export)
   - Haskell: `src/Mandelbrot.hs` (logic) + `app/Main.hs` (I/O)
+  - Python: `src/mandelbrot_py/mandelbrot.py` (logic) + `src/mandelbrot_py/main.py` (I/O)
 - Output format: PPM P3 ASCII, one pixel per line, LF-only line endings
 
 ## Critical Constants (must be identical across all languages)
@@ -47,6 +53,7 @@ sips -s format png rust/mandelbrot.ppm --out rust/mandelbrot.png && open rust/ma
 Use Japanese test names per global CLAUDE.md:
 - Rust: `fn test_原点は集合の内部()`
 - Haskell: `it "原点は集合の内部" $ ...`
+- Python: `def test_原点は集合の内部():`
 
 ## Known Test Points
 

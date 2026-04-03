@@ -59,6 +59,7 @@ color(n):
 |----------|-----------|-------------|-------------|
 | Rust | `rust/` | Cargo | `cd rust && cargo run --release` |
 | Haskell | `haskell/` | Stack (lts-22.7) | `cd haskell && stack build && stack exec mandelbrot` |
+| Python | `python/` | Rye | `cd python && rye run mandelbrot` |
 
 ## Testing
 
@@ -68,6 +69,9 @@ cd rust && cargo test
 
 # Haskell
 cd haskell && stack test
+
+# Python
+cd python && rye run pytest tests/ -v
 ```
 
 ## Verifying Output
@@ -76,11 +80,12 @@ cd haskell && stack test
 
 ```bash
 diff haskell/mandelbrot.ppm rust/mandelbrot.ppm
+diff python/mandelbrot.ppm rust/mandelbrot.ppm
 ```
 
 ## Adding a New Language
 
-1. 新しいトップレベルディレクトリを作成 (例: `python/`)
+1. 新しいトップレベルディレクトリを作成 (例: `go/`)
 2. 上記パラメータでマンデルブロ計算を実装
 3. 同じ16色パレットを使用
 4. `mandelbrot.ppm` を P3 形式で出力
@@ -101,6 +106,12 @@ mandelbrot-polyglot/
 │   ├── src/Mandelbrot.hs
 │   ├── app/Main.hs
 │   └── test/Spec.hs
+├── python/
+│   ├── pyproject.toml
+│   ├── src/mandelbrot_py/
+│   │   ├── mandelbrot.py
+│   │   └── main.py
+│   └── tests/test_mandelbrot.py
 └── rust/
     ├── Cargo.toml
     ├── src/
