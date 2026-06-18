@@ -1,5 +1,11 @@
-pub const WIDTH: u32 = 800;
-pub const HEIGHT: u32 = 600;
+pub const BASE_WIDTH: u32 = 800;
+pub const BASE_HEIGHT: u32 = 600;
+
+/// ベース解像度 (800×600) に対する整数倍。1→800×600, 2→1600×1200, …
+pub const DEFAULT_SCALE: u32 = 2;
+
+pub const WIDTH: u32 = BASE_WIDTH * DEFAULT_SCALE;
+pub const HEIGHT: u32 = BASE_HEIGHT * DEFAULT_SCALE;
 
 pub const X_MIN: f64 = -2.5;
 pub const X_MAX: f64 = 1.0;
@@ -28,6 +34,11 @@ pub const PALETTE: [(u8, u8, u8); 16] = [
     (106, 52, 3),
 ];
 
+#[inline]
+pub const fn dimensions(scale: u32) -> (u32, u32) {
+    (BASE_WIDTH * scale, BASE_HEIGHT * scale)
+}
+
 pub fn mandelbrot(cx: f64, cy: f64) -> u32 {
     let mut z_re: f64 = 0.0;
     let mut z_im: f64 = 0.0;
@@ -55,8 +66,8 @@ pub fn color(n: u32) -> (u8, u8, u8) {
     }
 }
 
-pub fn pixel_to_complex(row: u32, col: u32) -> (f64, f64) {
-    let cx = X_MIN + (col as f64) * (X_MAX - X_MIN) / (WIDTH as f64);
-    let cy = Y_MAX - (row as f64) * (Y_MAX - Y_MIN) / (HEIGHT as f64);
+pub fn pixel_to_complex(row: u32, col: u32, width: u32, height: u32) -> (f64, f64) {
+    let cx = X_MIN + (col as f64) * (X_MAX - X_MIN) / (width as f64);
+    let cy = Y_MAX - (row as f64) * (Y_MAX - Y_MIN) / (height as f64);
     (cx, cy)
 }
