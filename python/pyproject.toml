@@ -11,6 +11,7 @@ requires-python = ">= 3.8"
 
 [project.scripts]
 mandelbrot = "mandelbrot_py.main:main"
+compare-mandelbrot-layout = "mandelbrot_py.compare_layout:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -20,6 +21,7 @@ build-backend = "hatchling.build"
 managed = true
 dev-dependencies = [
     "pytest>=9.0.2",
+    "pillow>=11.0.0",
 ]
 
 [tool.hatch.metadata]
