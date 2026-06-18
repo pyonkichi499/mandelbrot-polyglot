@@ -12,7 +12,8 @@ All implementations use identical parameters and coloring algorithms, aiming for
 
 | Parameter | Value | Note |
 |-----------|-------|------|
-| Image size | 800 x 600 | Square pixels (0.004375 units/px) |
+| Base image size | 800 x 600 | スケール N に対し **N×800 × N×600**（N は正の整数） |
+| Default scale | 2 | 省略時は 1600 x 1200（ベースの 2 倍） |
 | X range | [-2.5, 1.0] | Real axis |
 | Y range | [-1.3125, 1.3125] | Imaginary axis |
 | Max iterations | 100 | |
@@ -61,6 +62,42 @@ color(n):
 | Haskell | `haskell/` | Stack (lts-22.7) | `cd haskell && stack build && stack exec mandelbrot` |
 | Python | `python/` | Rye | `cd python && rye run mandelbrot` |
 
+### 解像度（スケール）
+
+ベースは **800×600**。CLI で整数スケール `N` を指定すると **N×800 × N×600** で描画する。
+
+- **デフォルト**はスケール **2**（1600×1200）。そのときの出力ファイル名は従来どおり `mandelbrot.ppm`。
+- スケールが **2 以外**のときは、デフォルトの出力パスは `mandelbrot-Nx.ppm`（例: `mandelbrot-1x.ppm`）。
+- いずれの実装も `--output` / `-o` でパスを上書きできる。
+
+```text
+# Rust
+cargo run --release -- --scale 1
+cargo run --release -- --scale 3 -o /tmp/out.ppm
+
+# Haskell
+stack exec mandelbrot -- --scale 1
+stack exec mandelbrot -- -s 3 -o /tmp/out.ppm
+
+# Python
+rye run mandelbrot -- --scale 1
+rye run mandelbrot -- -s 3 -o /tmp/out.ppm
+```
+
+### 横並び比較（別ツール）
+
+異なる解像度や別ディレクトリの PPM/PNG を **横一列**に並べ、1 枚の PNG にまとめる。Python の開発依存 [Pillow](https://python-pillow.org/) を使う。
+
+```bash
+cd python && rye run python -m mandelbrot_py.compare_layout \
+  ../rust/mandelbrot-1x.ppm ../rust/mandelbrot.ppm \
+  --output ../rust/compare-scales.png --align-height
+```
+
+（`rye run compare-mandelbrot-layout` でも呼べるが、`-o` が Rye 側に解釈される場合は上記の `python -m` か `--output=...` 形式を使う。）
+
+`--align-height` は高さを揃えて（最も高い画像に合わせて）横に並べる。省略時は各画像の元のピクセルサイズのまま結合する。
+
 ## Testing
 
 ```bash
@@ -76,7 +113,7 @@ cd python && rye run pytest tests/ -v
 
 ## Verifying Output
 
-全実装が同一の PPM ファイルを出力することを検証する。
+**同じスケール**で各言語を実行したうえで、出力 PPM が一致することを検証する（例: いずれもデフォルトのスケール 2）。
 
 ```bash
 diff haskell/mandelbrot.ppm rust/mandelbrot.ppm
@@ -110,7 +147,8 @@ mandelbrot-polyglot/
 │   ├── pyproject.toml
 │   ├── src/mandelbrot_py/
 │   │   ├── mandelbrot.py
-│   │   └── main.py
+│   │   ├── main.py
+│   │   └── compare_layout.py   # 横並び比較（compare-mandelbrot-layout）
 │   └── tests/test_mandelbrot.py
 └── rust/
     ├── Cargo.toml
@@ -137,9 +175,10 @@ mandelbrot(c_re, c_im):
 
 Pixel-to-complex mapping (row 0 = Y_MAX, positive imaginary axis points up):
 ```
-cx = X_MIN + col * (X_MAX - X_MIN) / WIDTH
-cy = Y_MAX - row * (Y_MAX - Y_MIN) / HEIGHT
+cx = X_MIN + col * (X_MAX - X_MIN) / width
+cy = Y_MAX - row * (Y_MAX - Y_MIN) / height
 ```
+（`width` / `height` はスケールに応じたピクセル幅・高さ）
 
 ## License
 

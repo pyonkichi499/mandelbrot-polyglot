@@ -18,6 +18,9 @@ cd haskell && stack build && stack exec mandelbrot
 cd python && rye run pytest tests/ -v
 cd python && rye run mandelbrot
 
+# Optional: side-by-side PNG from multiple PPM/PNG (dev dependency: Pillow)
+cd python && rye run python -m mandelbrot_py.compare_layout ../rust/mandelbrot-1x.ppm ../rust/mandelbrot.ppm --output ../rust/compare.png --align-height
+
 # Verify output identity
 diff haskell/mandelbrot.ppm rust/mandelbrot.ppm
 diff python/mandelbrot.ppm rust/mandelbrot.ppm
@@ -32,12 +35,12 @@ sips -s format png rust/mandelbrot.ppm --out rust/mandelbrot.png && open rust/ma
 - Computation logic is separated from the entry point in every language:
   - Rust: `src/mandelbrot.rs` (logic) + `src/main.rs` (I/O) + `src/lib.rs` (re-export)
   - Haskell: `src/Mandelbrot.hs` (logic) + `app/Main.hs` (I/O)
-  - Python: `src/mandelbrot_py/mandelbrot.py` (logic) + `src/mandelbrot_py/main.py` (I/O)
+  - Python: `src/mandelbrot_py/mandelbrot.py` (logic) + `src/mandelbrot_py/main.py` (I/O); optional `compare_layout.py` for horizontal layout only
 - Output format: PPM P3 ASCII, one pixel per line, LF-only line endings
 
 ## Critical Constants (must be identical across all languages)
 
-- Image: 800x600, X: [-2.5, 1.0], Y: [-1.3125, 1.3125]
+- Base image: 800x600; integer scale N gives N×800 by N×600 (default N=2 → 1600x1200). CLI: `--scale` / `-s`, `--output` / `-o`. X: [-2.5, 1.0], Y: [-1.3125, 1.3125]
 - Max iterations: 100, Escape: |z|^2 > 4.0 (strict)
 - 16-color cycling palette, black for set interior
 

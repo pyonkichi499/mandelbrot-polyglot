@@ -18,6 +18,9 @@ cd haskell && stack build && stack exec mandelbrot
 cd python && rye run pytest tests/ -v
 cd python && rye run mandelbrot
 
+# 任意: 複数 PPM/PNG を横並びにした PNG（開発依存: Pillow）
+cd python && rye run python -m mandelbrot_py.compare_layout ../rust/mandelbrot-1x.ppm ../rust/mandelbrot.ppm --output ../rust/compare.png --align-height
+
 # 出力の一致を検証
 diff haskell/mandelbrot.ppm rust/mandelbrot.ppm
 diff python/mandelbrot.ppm rust/mandelbrot.ppm
@@ -32,12 +35,12 @@ sips -s format png rust/mandelbrot.ppm --out rust/mandelbrot.png && open rust/ma
 - 計算ロジックとエントリポイントは全言語で分離:
   - Rust: `src/mandelbrot.rs`（ロジック）+ `src/main.rs`（I/O）+ `src/lib.rs`（re-export）
   - Haskell: `src/Mandelbrot.hs`（ロジック）+ `app/Main.hs`（I/O）
-  - Python: `src/mandelbrot_py/mandelbrot.py`（ロジック）+ `src/mandelbrot_py/main.py`（I/O）
+  - Python: `src/mandelbrot_py/mandelbrot.py`（ロジック）+ `src/mandelbrot_py/main.py`（I/O）+ 任意 `compare_layout.py`（横並び用）
 - 出力形式: PPM P3 ASCII、1ピクセル1行、LF改行のみ
 
 ## 重要な定数（全言語で同一であること）
 
-- 画像: 800x600、X: [-2.5, 1.0]、Y: [-1.3125, 1.3125]
+- ベース画像 800x600、整数スケール N で N×800 × N×600（省略時 N=2 で 1600x1200）。CLI: `--scale` / `-s`、`--output` / `-o`。X: [-2.5, 1.0]、Y: [-1.3125, 1.3125]
 - 最大反復回数: 100、エスケープ条件: |z|^2 > 4.0（厳密な不等号）
 - 16色循環パレット、集合内部は黒
 
