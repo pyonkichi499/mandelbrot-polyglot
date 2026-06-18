@@ -1,7 +1,11 @@
 {-# LANGUAGE BangPatterns #-}
 
 module Mandelbrot
-    ( width
+    ( baseWidth
+    , baseHeight
+    , defaultScale
+    , dimensionsFromScale
+    , width
     , height
     , xMin
     , xMax
@@ -15,11 +19,23 @@ module Mandelbrot
     , pixelToComplex
     ) where
 
+baseWidth :: Int
+baseWidth = 800
+
+baseHeight :: Int
+baseHeight = 600
+
+defaultScale :: Int
+defaultScale = 2
+
+dimensionsFromScale :: Int -> (Int, Int)
+dimensionsFromScale s = (baseWidth * s, baseHeight * s)
+
 width :: Int
-width = 800
+width = fst (dimensionsFromScale defaultScale)
 
 height :: Int
-height = 600
+height = snd (dimensionsFromScale defaultScale)
 
 xMin :: Double
 xMin = -2.5
@@ -76,8 +92,8 @@ color n
     | n == maxIterations = (0, 0, 0)
     | otherwise          = palette !! (n `mod` 16)
 
-pixelToComplex :: Int -> Int -> (Double, Double)
-pixelToComplex row col = (cx, cy)
+pixelToComplex :: Int -> Int -> Int -> Int -> (Double, Double)
+pixelToComplex row col w h = (cx, cy)
   where
-    cx = xMin + fromIntegral col * (xMax - xMin) / fromIntegral width
-    cy = yMax - fromIntegral row * (yMax - yMin) / fromIntegral height
+    cx = xMin + fromIntegral col * (xMax - xMin) / fromIntegral w
+    cy = yMax - fromIntegral row * (yMax - yMin) / fromIntegral h

@@ -1,7 +1,18 @@
 module Main (main) where
 
 import Test.Hspec
-import Mandelbrot (width, height, maxIterations, mandelbrot, color, pixelToComplex)
+import Mandelbrot
+    ( width
+    , height
+    , baseWidth
+    , baseHeight
+    , defaultScale
+    , dimensionsFromScale
+    , maxIterations
+    , mandelbrot
+    , color
+    , pixelToComplex
+    )
 
 main :: IO ()
 main = hspec spec
@@ -12,11 +23,21 @@ nearlyEqual epsilon expected actual = abs (actual - expected) < epsilon
 spec :: Spec
 spec = do
     describe "定数" $ do
-        it "画像幅は800" $
-            width `shouldBe` 800
+        it "画像幅は1600" $
+            width `shouldBe` 1600
 
-        it "画像高さは600" $
-            height `shouldBe` 600
+        it "画像高さは1200" $
+            height `shouldBe` 1200
+
+        it "ベース解像度は800x600" $ do
+            baseWidth `shouldBe` 800
+            baseHeight `shouldBe` 600
+            defaultScale `shouldBe` 2
+
+        it "スケールごとの解像度" $ do
+            dimensionsFromScale 1 `shouldBe` (800, 600)
+            dimensionsFromScale 2 `shouldBe` (1600, 1200)
+            dimensionsFromScale 3 `shouldBe` (2400, 1800)
 
         it "最大反復回数は100" $
             maxIterations `shouldBe` 100
@@ -49,11 +70,11 @@ spec = do
 
     describe "pixelToComplex" $ do
         it "ピクセル座標の左上" $ do
-            let (cx, cy) = pixelToComplex 0 0
+            let (cx, cy) = pixelToComplex 0 0 width height
             cx `shouldSatisfy` nearlyEqual 1e-9 (-2.5)
             cy `shouldSatisfy` nearlyEqual 1e-9 1.3125
 
         it "ピクセル座標の原点付近" $ do
-            let (cx, cy) = pixelToComplex 300 571
+            let (cx, cy) = pixelToComplex 600 1142 width height
             cx `shouldSatisfy` nearlyEqual 0.01 0.0
             cy `shouldSatisfy` nearlyEqual 0.01 0.0
