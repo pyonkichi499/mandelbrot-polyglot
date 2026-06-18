@@ -1,5 +1,15 @@
-WIDTH: int = 800
-HEIGHT: int = 600
+BASE_WIDTH: int = 800
+BASE_HEIGHT: int = 600
+DEFAULT_SCALE: int = 2
+
+
+def dimensions(scale: int) -> tuple[int, int]:
+    return (BASE_WIDTH * scale, BASE_HEIGHT * scale)
+
+
+WIDTH: int
+HEIGHT: int
+WIDTH, HEIGHT = dimensions(DEFAULT_SCALE)
 
 X_MIN: float = -2.5
 X_MAX: float = 1.0
@@ -52,7 +62,7 @@ def color(n: int) -> tuple[int, int, int]:
     return PALETTE[n % 16]
 
 
-def pixel_to_complex(row: int, col: int) -> tuple[float, float]:
-    cx = X_MIN + col * (X_MAX - X_MIN) / WIDTH
-    cy = Y_MAX - row * (Y_MAX - Y_MIN) / HEIGHT
+def pixel_to_complex(row: int, col: int, width: int, height: int) -> tuple[float, float]:
+    cx = X_MIN + col * (X_MAX - X_MIN) / width
+    cy = Y_MAX - row * (Y_MAX - Y_MIN) / height
     return (cx, cy)

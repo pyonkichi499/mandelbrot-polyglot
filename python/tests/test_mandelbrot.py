@@ -1,9 +1,13 @@
 import pytest
 
 from mandelbrot_py.mandelbrot import (
+    BASE_HEIGHT,
+    BASE_WIDTH,
+    DEFAULT_SCALE,
     WIDTH,
     HEIGHT,
     MAX_ITERATIONS,
+    dimensions,
     mandelbrot,
     color,
     pixel_to_complex,
@@ -11,9 +15,18 @@ from mandelbrot_py.mandelbrot import (
 
 
 def test_定数が仕様通り() -> None:
-    assert WIDTH == 800
-    assert HEIGHT == 600
+    assert BASE_WIDTH == 800
+    assert BASE_HEIGHT == 600
+    assert DEFAULT_SCALE == 2
+    assert WIDTH == 1600
+    assert HEIGHT == 1200
     assert MAX_ITERATIONS == 100
+
+
+def test_スケールごとの解像度() -> None:
+    assert dimensions(1) == (800, 600)
+    assert dimensions(2) == (1600, 1200)
+    assert dimensions(3) == (2400, 1800)
 
 
 def test_原点は集合の内部() -> None:
@@ -49,12 +62,12 @@ def test_パレットの循環() -> None:
 
 
 def test_ピクセル座標の左上() -> None:
-    cx, cy = pixel_to_complex(0, 0)
+    cx, cy = pixel_to_complex(0, 0, WIDTH, HEIGHT)
     assert cx == pytest.approx(-2.5, abs=1e-9)
     assert cy == pytest.approx(1.3125, abs=1e-9)
 
 
 def test_ピクセル座標の原点付近() -> None:
-    cx, cy = pixel_to_complex(300, 571)
+    cx, cy = pixel_to_complex(600, 1142, WIDTH, HEIGHT)
     assert cx == pytest.approx(0.0, abs=0.01)
     assert cy == pytest.approx(0.0, abs=0.01)
